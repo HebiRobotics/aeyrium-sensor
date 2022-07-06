@@ -26,7 +26,7 @@ public class AeyriumSensorPlugin implements EventChannel.StreamHandler, SensorEv
     private final float[] mMat4Rotation = new float[16];
     private final float[] mMat4RotDisplay = new float[16];
     private final float[] mMat4RotRemappedXZ = new float[16];
-    private final double[] mVec3Orientation = new double[3];
+    private final double[] mVec4Orientation = new double[4];
 
     private WindowManager mWindowManager;
     private SensorManager mSensorManager;
@@ -84,22 +84,17 @@ public class AeyriumSensorPlugin implements EventChannel.StreamHandler, SensorEv
         lowPassFilter(event.values, mVec4Rotation, 0.3f);
 
         // Get the rotation matrix from the smoothed event rotation vector.
-        SensorManager.getRotationMatrixFromVector(mMat4Rotation, mVec4Rotation);
+        SensorManager.getQuaternionFromVector(tempq, mVec4Rotation);
 
-        // Adjust the matrix to take into account the device orientation.
-        remapRotationMatrixByDisplay(mWindowManager, mMat4RotDisplay, mMat4Rotation);
-
-        // Remap to adjust for display orientation.
-        SensorManager.remapCoordinateSystem(mMat4RotDisplay, SensorManager.AXIS_X,
-                SensorManager.AXIS_Z, mMat4RotRemappedXZ);
-
+        // Adjust the matrix to take into account the device orientation
         // Capture the orientation vector from the rotation matrix.
         //SensorManager.getOrientation(mMat4RotRemappedXZ, mVec3Orientation);
-        mVec3Orientation[0] = Math.atan2(mMat4RotRemappedXZ[1], mMat4RotRemappedXZ[5]);
-        mVec3Orientation[1] = Math.asin(-mMat4RotRemappedXZ[9]);
-        mVec3Orientation[2] = Math.atan2(-mMat4RotRemappedXZ[8], mMat4RotRemappedXZ[10]);
+        mVec4Orientation[0] = tempq[0];
+        mVec4Orientation[1] = tempq[1];
+        mVec4Orientation[2] = tempq[2];
+        mVec4Orientation[3] = tempq[3];
 
-        mEventSink.success(mVec3Orientation);
+        mEventSink.success(mVec4Orientation);
     }
 
     private static void lowPassFilter(float[] input, float[] prev, float alpha) {
