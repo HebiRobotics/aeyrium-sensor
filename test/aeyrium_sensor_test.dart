@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 import 'package:aeyrium_sensor/aeyrium_sensor.dart';
 import 'package:flutter/services.dart';
 import 'package:test/test.dart';
@@ -10,21 +9,18 @@ void main() {
     const List<double> sensorData = <double>[1.0, 2.0];
 
     const StandardMethodCodec standardMethod = StandardMethodCodec();
+    const channel = BasicMessageChannel<ByteData>(channelName, BinaryCodec());
 
     void emitEvent(ByteData event) {
-      BinaryMessages.handlePlatformMessage(
-        channelName,
-        event,
-        (ByteData reply) {},
-      );
+      channel.send(event);
     }
 
     bool isCanceled = false;
-    BinaryMessages.setMockMessageHandler(channelName, (ByteData message) async {
+    channel.setMessageHandler((ByteData? message) async {
       final MethodCall methodCall = standardMethod.decodeMethodCall(message);
       if (methodCall.method == 'listen') {
         emitEvent(standardMethod.encodeSuccessEnvelope(sensorData));
-        emitEvent(null);
+        emitEvent(ByteData(0));
         return standardMethod.encodeSuccessEnvelope(null);
       } else if (methodCall.method == 'cancel') {
         isCanceled = true;
@@ -35,8 +31,8 @@ void main() {
     });
 
     final SensorEvent event = await AeyriumSensor.sensorEvents.first;
-    expect(event.pitch, 1.0);
-    expect(event.roll, 2.0);
+    expect(event.x, 1.0);
+    expect(event.y, 2.0);
 
     await Future<Null>.delayed(Duration.zero);
     expect(isCanceled, isTrue);

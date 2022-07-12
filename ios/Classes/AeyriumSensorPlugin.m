@@ -25,7 +25,7 @@ void _initMotionManager() {
 
 static void sendData(Float64 x, Float64 y, Float64 z, Float64 w, FlutterEventSink sink) { 
   NSMutableData* event = [NSMutableData dataWithCapacity:4 * sizeof(Float64)];
-  [event appendBytes:&x) length:sizeof(Float64)];
+  [event appendBytes:&x length:sizeof(Float64)];
   [event appendBytes:&y length:sizeof(Float64)];
   [event appendBytes:&z length:sizeof(Float64)];
   [event appendBytes:&w length:sizeof(Float64)];

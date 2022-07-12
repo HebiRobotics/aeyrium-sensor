@@ -1,3 +1,4 @@
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -19,7 +20,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     _streamSubscriptions = AeyriumSensor.sensorEvents.listen((event) {
       setState(() {
-        _data = "Pitch ${event.pitch} , Roll ${event.roll}";
+        _data = "Pitch ${event.x} , Roll ${event.y}";
       });
     });
     super.initState();
