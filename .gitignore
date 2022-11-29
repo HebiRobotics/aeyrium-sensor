@@ -1,0 +1,4 @@
+.dart_tool
+.packages
+example/.flutter-plugins-dependencies
+example/ios/Flutter/*
