@@ -48,7 +48,7 @@ double degrees(double radians) {
      CMQuaternion quat = attitude.quaternion;
 
    
-     sendData(quat.x, quat.y, quat.z, quat.z, eventSink);
+     sendData(quat.x, quat.y, quat.z, quat.w, eventSink);
    }];
   return nil;
 }
