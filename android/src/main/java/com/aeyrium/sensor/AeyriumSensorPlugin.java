@@ -1,5 +1,7 @@
 package com.aeyrium.sensor;
 
+import androidx.annotation.NonNull;
+
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -10,6 +12,8 @@ import android.view.WindowManager;
 
 import java.util.Arrays;
 
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
@@ -17,7 +21,7 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 /**
  * AeyriumSensorPlugin
  */
-public class AeyriumSensorPlugin implements EventChannel.StreamHandler, SensorEventListener {
+public class AeyriumSensorPlugin implements FlutterPlugin, EventChannel.StreamHandler, SensorEventListener {
 
     private static final String SENSOR_CHANNEL_NAME = "plugins.aeyrium.com/sensor";
     private static final int SENSOR_DELAY_uS = SensorManager.SENSOR_DELAY_UI;
@@ -27,31 +31,44 @@ public class AeyriumSensorPlugin implements EventChannel.StreamHandler, SensorEv
     private final float[] mMat4RotDisplay = new float[16];
     private final float[] mMat4RotRemappedXZ = new float[16];
     private final double[] mVec4Orientation = new double[4];
+    private final float[] mVec4TempOrientation = new float[4];
 
-    private WindowManager mWindowManager;
+    //private WindowManager mWindowManager;
     private SensorManager mSensorManager;
     private Sensor mSensor;
     private int mLastAccuracy;
     private EventChannel.EventSink mEventSink;
 
+    public void setup(Context c, BinaryMessenger m) {
+        final EventChannel sensorChannel = new EventChannel(m, SENSOR_CHANNEL_NAME);
+        mSensorManager = (SensorManager) c.getSystemService(Context.SENSOR_SERVICE);
+        if (mSensorManager == null) {
+            throw new IllegalStateException("Sensor Manager not found");
+        }
+        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+        sensorChannel.setStreamHandler(this);
+    }
+
+    @Override
+    public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
+        setup(binding.getApplicationContext(), binding.getBinaryMessenger());
+    }
+
+    @Override
+    public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+        // TODO: your plugin is no longer attached to a Flutter experience.
+    }
 
     /**
      * Plugin registration.
      */
     public static void registerWith(Registrar registrar) {
-        final EventChannel sensorChannel = new EventChannel(registrar.messenger(), SENSOR_CHANNEL_NAME);
-        sensorChannel.setStreamHandler(new AeyriumSensorPlugin(registrar.context(), registrar));
-
+        AeyriumSensorPlugin p = new AeyriumSensorPlugin();
+        p.setup(registrar.context(), registrar.messenger());
     }
 
-    private AeyriumSensorPlugin(Context context, Registrar registrar) {
-        mWindowManager = registrar.activity().getWindow().getWindowManager();
-        mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-        if (mSensorManager == null) {
-            throw new IllegalStateException("Sensor Manager not found");
-        }
-        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
-    }
+    //private AeyriumSensorPlugin(Context context, Registrar registrar) {
+    public AeyriumSensorPlugin() {}
 
     @Override
     public void onListen(Object arguments, EventChannel.EventSink events) {
@@ -84,15 +101,16 @@ public class AeyriumSensorPlugin implements EventChannel.StreamHandler, SensorEv
         lowPassFilter(event.values, mVec4Rotation, 0.3f);
 
         // Get the rotation matrix from the smoothed event rotation vector.
-        SensorManager.getQuaternionFromVector(tempq, mVec4Rotation);
+        SensorManager.getQuaternionFromVector(mVec4TempOrientation, mVec4Rotation);
 
         // Adjust the matrix to take into account the device orientation
         // Capture the orientation vector from the rotation matrix.
         //SensorManager.getOrientation(mMat4RotRemappedXZ, mVec3Orientation);
-        mVec4Orientation[0] = tempq[0];
-        mVec4Orientation[1] = tempq[1];
-        mVec4Orientation[2] = tempq[2];
-        mVec4Orientation[3] = tempq[3];
+        // Android uses wxyz, Event sink expects xyzw, reorder
+        mVec4Orientation[3] = mVec4TempOrientation[0];
+        mVec4Orientation[0] = mVec4TempOrientation[1];
+        mVec4Orientation[1] = mVec4TempOrientation[2];
+        mVec4Orientation[2] = mVec4TempOrientation[3];
 
         mEventSink.success(mVec4Orientation);
     }
