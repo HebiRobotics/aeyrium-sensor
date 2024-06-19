@@ -60,10 +60,10 @@ public class AeyriumSensorPlugin implements FlutterPlugin, EventChannel.StreamHa
     /**
      * Plugin registration.
      */
-    public static void registerWith(Registrar registrar) {
-        AeyriumSensorPlugin p = new AeyriumSensorPlugin();
-        p.setup(registrar.context(), registrar.messenger());
-    }
+    //public static void registerWith(Registrar registrar) {
+    //    AeyriumSensorPlugin p = new AeyriumSensorPlugin();
+    //    p.setup(registrar.context(), registrar.messenger());
+    //}
 
     //private AeyriumSensorPlugin(Context context, Registrar registrar) {
     public AeyriumSensorPlugin() {}
