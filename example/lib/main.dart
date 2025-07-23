@@ -14,7 +14,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   String _data = "";
 
-  StreamSubscription<dynamic> _streamSubscriptions;
+  late StreamSubscription<dynamic> _streamSubscriptions;
 
   @override
   void initState() {
@@ -28,9 +28,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
-    if (_streamSubscriptions != null) {
-      _streamSubscriptions.cancel();
-    }
+    _streamSubscriptions.cancel();
     super.dispose();
   }
 

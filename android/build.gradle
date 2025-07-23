@@ -24,10 +24,10 @@ apply plugin: 'com.android.library'
 
 android {
     namespace "com.aeyrium.sensor"
-    compileSdkVersion 28
+    compileSdkVersion flutter.compileSdkVersion
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion flutter.minSdkVersion
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
