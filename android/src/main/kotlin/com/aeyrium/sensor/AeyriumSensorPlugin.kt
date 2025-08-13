@@ -27,7 +27,7 @@ class AeyriumSensorPlugin: FlutterPlugin, StreamHandler, SensorEventListener {
     private var mSensorManager: SensorManager? = null
     private var mSensor: Sensor? = null
     private var mLastAccuracy = 0
-    private var mEventSink: EventChannel.EventSink? = null
+    private var mEventSink: EventSink? = null
 
     fun setup(c: Context, m: BinaryMessenger?) {
         val sensorChannel: EventChannel = EventChannel(m, SENSOR_CHANNEL_NAME)
@@ -45,14 +45,14 @@ class AeyriumSensorPlugin: FlutterPlugin, StreamHandler, SensorEventListener {
         // TODO: your plugin is no longer attached to a Flutter experience.
     }
 
-    override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
-        Arrays.fill(mVec4Rotation, 0)
+    override fun onListen(arguments: Any?, events: EventSink?) {
+        mVec4Rotation.fill(0)
         mEventSink = events
-        mSensorManager.registerListener(this, mSensor, SENSOR_DELAY_uS)
+        mSensorManager?.registerListener(this, mSensor, SENSOR_DELAY_uS)
     }
 
-    override fun onCancel(arguments: Object?) {
-        mSensorManager.unregisterListener(this, mSensor)
+    override fun onCancel(arguments: Any?) {
+        mSensorManager?.unregisterListener(this, mSensor)
         mEventSink = null
     }
 
