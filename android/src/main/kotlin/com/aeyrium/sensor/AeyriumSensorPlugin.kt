@@ -48,7 +48,7 @@ class AeyriumSensorPlugin: FlutterPlugin, StreamHandler, SensorEventListener {
     }
 
     override fun onListen(arguments: Any?, events: EventSink?) {
-        mVec4Rotation.fill(0.0)
+        mVec4Rotation.fill(0.0f)
         mEventSink = events
         mSensorManager?.registerListener(this, mSensor, SENSOR_DELAY_uS)
     }
