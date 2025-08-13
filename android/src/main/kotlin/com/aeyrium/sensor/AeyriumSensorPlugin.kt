@@ -33,7 +33,9 @@ class AeyriumSensorPlugin: FlutterPlugin, StreamHandler, SensorEventListener {
         val sensorChannel: EventChannel = EventChannel(m, SENSOR_CHANNEL_NAME)
         mSensorManager = c.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         kotlin.checkNotNull(mSensorManager) { "Sensor Manager not found" }
-        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
+        mSensorManager?.let { manager ->
+            mSensor = manager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
+        }
         sensorChannel.setStreamHandler(this)
     }
 
@@ -46,7 +48,7 @@ class AeyriumSensorPlugin: FlutterPlugin, StreamHandler, SensorEventListener {
     }
 
     override fun onListen(arguments: Any?, events: EventSink?) {
-        mVec4Rotation.fill(0)
+        mVec4Rotation.fill(0.0)
         mEventSink = events
         mSensorManager?.registerListener(this, mSensor, SENSOR_DELAY_uS)
     }
@@ -82,7 +84,7 @@ class AeyriumSensorPlugin: FlutterPlugin, StreamHandler, SensorEventListener {
         mVec4Orientation[1] = mVec4TempOrientation[2].toDouble()
         mVec4Orientation[2] = mVec4TempOrientation[3].toDouble()
 
-        mEventSink.success(mVec4Orientation)
+        mEventSink?.success(mVec4Orientation)
     }
 
     companion object {
