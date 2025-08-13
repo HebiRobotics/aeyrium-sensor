@@ -1,15 +1,19 @@
 package com.aeyrium.sensor
 
-import io.flutter.embedding.engine.plugins.FlutterPlugin
-import io.flutter.plugin.common.MethodCall
-import io.flutter.plugin.common.MethodChannel
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler
-import io.flutter.plugin.common.MethodChannel.Result
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.view.Surface;
+import android.view.WindowManager;
 
-/**
- * AeyriumSensorPlugin
- */
-class AeyriumSensorPlugin : FlutterPlugin, StreamHandler, SensorEventListener {
+import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.plugin.common.BinaryMessenger;
+import io.flutter.plugin.common.EventChannel;
+
+/** AeyriumSensorPlugin */
+class AeyriumSensorPlugin : FlutterPlugin, EventChannel.StreamHandler, SensorEventListener {
 
     private val mVec4Rotation = FloatArray(4)
     private val mMat4Rotation = FloatArray(16)
