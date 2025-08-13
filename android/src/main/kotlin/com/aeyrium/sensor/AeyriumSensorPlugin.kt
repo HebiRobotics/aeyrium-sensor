@@ -11,9 +11,11 @@ import android.view.WindowManager;
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
+import io.flutter.plugin.common.EventChannel.EventSink;
+import io.flutter.plugin.common.EventChannel.StreamHandler;
 
 /** AeyriumSensorPlugin */
-class AeyriumSensorPlugin : FlutterPlugin, EventChannel.StreamHandler, SensorEventListener {
+class AeyriumSensorPlugin: FlutterPlugin, StreamHandler, SensorEventListener {
 
     private val mVec4Rotation = FloatArray(4)
     private val mMat4Rotation = FloatArray(16)
@@ -43,7 +45,7 @@ class AeyriumSensorPlugin : FlutterPlugin, EventChannel.StreamHandler, SensorEve
         // TODO: your plugin is no longer attached to a Flutter experience.
     }
 
-    override fun onListen(arguments: Object?, events: EventChannel.EventSink?) {
+    override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
         Arrays.fill(mVec4Rotation, 0)
         mEventSink = events
         mSensorManager.registerListener(this, mSensor, SENSOR_DELAY_uS)
