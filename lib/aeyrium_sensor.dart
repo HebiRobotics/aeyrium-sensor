@@ -8,10 +8,10 @@ const EventChannel _sensorEventChannel =
     EventChannel('plugins.aeyrium.com/sensor');
 
 class SensorEvent {
-  final x;
-  final y;
-  final z;
-  final w;
+  final double x;
+  final double y;
+  final double z;
+  final double w;
 
   SensorEvent(this.x, this.y, this.z, this.w);
 
@@ -26,9 +26,9 @@ class AeyriumSensor {
 
   /// A broadcast stream of events from the device rotation sensor.
   static Stream<SensorEvent> get sensorEvents {
-      _sensorEvents = _sensorEventChannel
-          .receiveBroadcastStream()
-          .map((dynamic event) => _listToSensorEvent(event.cast<double>()));
+    _sensorEvents = _sensorEventChannel
+        .receiveBroadcastStream()
+        .map((dynamic event) => _listToSensorEvent(event.cast<double>()));
     return _sensorEvents;
   }
 
