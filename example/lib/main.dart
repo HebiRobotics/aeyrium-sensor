@@ -1,17 +1,18 @@
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:aeyrium_sensor/aeyrium_sensor.dart';
 
-void main() => runApp(new MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
-  _MyAppState createState() => new _MyAppState();
+  MyAppState createState() => MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class MyAppState extends State<MyApp> {
   String _data = "";
 
   late StreamSubscription<dynamic> _streamSubscriptions;
@@ -34,15 +35,15 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      home: new Scaffold(
-        appBar: new AppBar(
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
         body: Padding(
           padding: const EdgeInsets.all(15.0),
-          child: new Center(
-            child: new Text('Device : $_data'),
+          child: Center(
+            child: Text('Device : $_data'),
           ),
         ),
       ),
