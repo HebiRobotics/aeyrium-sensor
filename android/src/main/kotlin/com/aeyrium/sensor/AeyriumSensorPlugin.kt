@@ -1,20 +1,16 @@
 package com.aeyrium.sensor
 
-import android.content.Context
+import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.plugin.common.MethodCall
+import io.flutter.plugin.common.MethodChannel
+import io.flutter.plugin.common.MethodChannel.MethodCallHandler
+import io.flutter.plugin.common.MethodChannel.Result
 
 /**
  * AeyriumSensorPlugin
  */
-class AeyriumSensorPlugin
-/**
- * Plugin registration.
- */
-//public static void registerWith(Registrar registrar) {
-//    AeyriumSensorPlugin p = new AeyriumSensorPlugin();
-//    p.setup(registrar.context(), registrar.messenger());
-//}
-//private AeyriumSensorPlugin(Context context, Registrar registrar) {
-    : FlutterPlugin, StreamHandler, SensorEventListener {
+class AeyriumSensorPlugin : FlutterPlugin, StreamHandler, SensorEventListener {
+
     private val mVec4Rotation = FloatArray(4)
     private val mMat4Rotation = FloatArray(16)
     private val mMat4RotDisplay = FloatArray(16)
@@ -22,7 +18,6 @@ class AeyriumSensorPlugin
     private val mVec4Orientation = DoubleArray(4)
     private val mVec4TempOrientation = FloatArray(4)
 
-    //private WindowManager mWindowManager;
     private var mSensorManager: SensorManager? = null
     private var mSensor: Sensor? = null
     private var mLastAccuracy = 0
@@ -36,39 +31,32 @@ class AeyriumSensorPlugin
         sensorChannel.setStreamHandler(this)
     }
 
-    @Override
-    fun onAttachedToEngine(@NonNull binding: FlutterPluginBinding) {
-        setup(binding.getApplicationContext(), binding.getBinaryMessenger())
+    override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+        setup(flutterPluginBinding.getApplicationContext(), flutterPluginBinding.getBinaryMessenger())
     }
 
-    @Override
-    fun onDetachedFromEngine(@NonNull binding: FlutterPluginBinding?) {
+    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         // TODO: your plugin is no longer attached to a Flutter experience.
     }
 
-    @Override
-    fun onListen(arguments: Object?, events: EventChannel.EventSink?) {
+    override fun onListen(arguments: Object?, events: EventChannel.EventSink?) {
         Arrays.fill(mVec4Rotation, 0)
         mEventSink = events
         mSensorManager.registerListener(this, mSensor, SENSOR_DELAY_uS)
     }
 
-    @Override
-    fun onCancel(arguments: Object?) {
+    override fun onCancel(arguments: Object?) {
         mSensorManager.unregisterListener(this, mSensor)
         mEventSink = null
     }
 
-    @Override
-    fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
         if (mLastAccuracy != accuracy) {
             mLastAccuracy = accuracy
         }
     }
 
-
-    @Override
-    fun onSensorChanged(event: SensorEvent) {
+    override fun onSensorChanged(event: SensorEvent) {
         if (mLastAccuracy == SensorManager.SENSOR_STATUS_UNRELIABLE || mEventSink == null) {
             return
         }
@@ -138,28 +126,7 @@ class AeyriumSensorPlugin
                 }
             }
             SensorManager.remapCoordinateSystem(inMatrix, x, y, outMatrix)
-        } /*
-    // Remap the axes as if the device screen was the instrument panel,
-    // and adjust the rotation matrix for the device orientation.
-    switch (mWindowManager.getDefaultDisplay().getRotation()) {
-        case Surface.ROTATION_0:
-        default:
-            worldAxisForDeviceAxisX = SensorManager.AXIS_X;
-            worldAxisForDeviceAxisY = SensorManager.AXIS_Z;
-            break;
-        case Surface.ROTATION_90:
-            worldAxisForDeviceAxisX = SensorManager.AXIS_Z;
-            worldAxisForDeviceAxisY = SensorManager.AXIS_MINUS_X;
-            break;
-        case Surface.ROTATION_180:
-            worldAxisForDeviceAxisX = SensorManager.AXIS_MINUS_X;
-            worldAxisForDeviceAxisY = SensorManager.AXIS_MINUS_Z;
-            break;
-        case Surface.ROTATION_270:
-            worldAxisForDeviceAxisX = SensorManager.AXIS_MINUS_Z;
-            worldAxisForDeviceAxisY = SensorManager.AXIS_X;
-            break;
-    }
-    */
-    }
+        }
+  }
+
 }
