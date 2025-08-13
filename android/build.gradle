@@ -1,3 +1,5 @@
+package android
+
 group 'com.aeyrium.sensor'
 version '1.0.0'
 
